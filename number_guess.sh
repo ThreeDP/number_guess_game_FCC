@@ -16,6 +16,7 @@ MAIN_MENU() {
     if [[ $INSERT_USER_RESULT = "INSERT 0 1" ]]
     then
       echo "Welcome, $USERNAME! It looks like this is your first time here."
+      USER_ID=$($PSQL "SELECT user_id FROM users WHERE username = '$USERNAME'")
     fi
   else
     GAMES_INFO=$($PSQL "SELECT COUNT(*), MIN(number_of_guesses) FROM users RIGHT JOIN guess_games USING(user_id) WHERE user_id = $USER_ID")
@@ -38,16 +39,17 @@ MAIN_GAME() {
   else
     echo "Guess the secret number between 1 and 1000:"
   fi
-  echo -e "SECRET NUMBER: $SECRET_NUMBER"
   read GUESS_NUMBER
   if [[ $SECRET_NUMBER -lt $GUESS_NUMBER ]]
   then
-    MAIN_GAME "It's lower than that, guess again:"
+    MAIN_GAME "It's lower than that, guess again:" $(($2 + 1))
   elif [[ $SECRET_NUMBER -gt $GUESS_NUMBER ]]
   then
-    MAIN_GAME "It's higher than that, guess again:"
+    MAIN_GAME "It's higher than that, guess again:" $(($2 + 1))
   else
-    echo "You guessed it in <number_of_guesses> tries. The secret number was $SECRET_NUMBER. Nice job!"
+    TRIES=$(($2 + 1))
+    echo "You guessed it in $TRIES tries. The secret number was $SECRET_NUMBER. Nice job!"
+    INSERT_GUESS_GAME_RESULT=$($PSQL "INSERT INTO guess_games(user_id, number_of_guesses, secret_number) VALUES($USER_ID, $TRIES, $SECRET_NUMBER)")
   fi
 }
 
