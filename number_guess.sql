@@ -49,7 +49,7 @@ SET default_table_access_method = heap;
 
 CREATE TABLE public.guess_games (
     guess_game_id integer NOT NULL,
-    user_id integer,
+    user_id integer NOT NULL,
     number_of_guesses integer,
     secret_number integer
 );
@@ -131,26 +131,46 @@ ALTER TABLE ONLY public.users ALTER COLUMN user_id SET DEFAULT nextval('public.u
 -- Data for Name: guess_games; Type: TABLE DATA; Schema: public; Owner: freecodecamp
 --
 
+INSERT INTO public.guess_games VALUES (264, 132, 308, 307);
+INSERT INTO public.guess_games VALUES (265, 132, 640, 639);
+INSERT INTO public.guess_games VALUES (266, 133, 154, 153);
+INSERT INTO public.guess_games VALUES (267, 133, 93, 92);
+INSERT INTO public.guess_games VALUES (268, 132, 825, 822);
+INSERT INTO public.guess_games VALUES (269, 132, 885, 884);
+INSERT INTO public.guess_games VALUES (270, 132, 1, 884);
+INSERT INTO public.guess_games VALUES (271, 132, 979, 978);
+INSERT INTO public.guess_games VALUES (272, 134, 582, 581);
+INSERT INTO public.guess_games VALUES (273, 134, 983, 982);
+INSERT INTO public.guess_games VALUES (274, 135, 461, 460);
+INSERT INTO public.guess_games VALUES (275, 135, 338, 337);
+INSERT INTO public.guess_games VALUES (276, 134, 265, 262);
+INSERT INTO public.guess_games VALUES (277, 134, 185, 184);
+INSERT INTO public.guess_games VALUES (278, 134, 1, 184);
+INSERT INTO public.guess_games VALUES (279, 134, 995, 994);
 
 
 --
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: freecodecamp
 --
 
+INSERT INTO public.users VALUES (132, 'user_1716148199858');
+INSERT INTO public.users VALUES (133, 'user_1716148199857');
+INSERT INTO public.users VALUES (134, 'user_1716148232560');
+INSERT INTO public.users VALUES (135, 'user_1716148232559');
 
 
 --
 -- Name: guess_games_guess_game_id_seq; Type: SEQUENCE SET; Schema: public; Owner: freecodecamp
 --
 
-SELECT pg_catalog.setval('public.guess_games_guess_game_id_seq', 57, true);
+SELECT pg_catalog.setval('public.guess_games_guess_game_id_seq', 279, true);
 
 
 --
 -- Name: users_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: freecodecamp
 --
 
-SELECT pg_catalog.setval('public.users_user_id_seq', 63, true);
+SELECT pg_catalog.setval('public.users_user_id_seq', 135, true);
 
 
 --
