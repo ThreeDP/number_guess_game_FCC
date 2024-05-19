@@ -13,10 +13,20 @@ MAIN_MENU() {
   if [[ -z $USER_ID ]]
   then
     INSERT_USER_RESULT=$($PSQL "INSERT INTO users(username) VALUES('$USERNAME')")
-    echo $INSERT_USER_RESULT
+    if [[ $INSERT_USER_RESULT = "INSERT 0 1" ]]
+    then
+      echo "Welcome, $USERNAME! It looks like this is your first time here."
+    fi
   else
     GAMES_INFO=$($PSQL "SELECT COUNT(*), MIN(number_of_guesses) FROM users RIGHT JOIN guess_games USING(user_id) WHERE user_id = $USER_ID")
-    echo $GAMES_INFO
+    IFS="|"
+    read -r GAMES_PLAYED BEST_GAME <<< $GAMES_INFO
+    if [[ $GAMES_PLAYED = '0' ]]
+    then
+      echo "Welcome back, $USERNAME! You have played $GAMES_PLAYED games."
+    else
+      echo "Welcome back, $USERNAME! You have played $GAMES_PLAYED games, and your best game took $BEST_GAME guesses."
+    fi
   fi
 }
 
