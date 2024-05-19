@@ -2,7 +2,7 @@
 
 PSQL="psql --username=freecodecamp --dbname=number_guess -t --no-align -c"
 
-SECRET_NUMBER=$($RANDOM % 1000 + 1)
+SECRET_NUMBER=$(( $RANDOM % 1000 + 1 ))
 
 echo -e "\n~~~~~ Number Guess Game ~~~~~\n"
 
@@ -27,6 +27,27 @@ MAIN_MENU() {
     else
       echo "Welcome back, $USERNAME! You have played $GAMES_PLAYED games, and your best game took $BEST_GAME guesses."
     fi
+  fi
+  MAIN_GAME
+}
+
+MAIN_GAME() {
+  if [[ $1 ]]
+  then
+    echo "$1"
+  else
+    echo "Guess the secret number between 1 and 1000:"
+  fi
+  echo -e "SECRET NUMBER: $SECRET_NUMBER"
+  read GUESS_NUMBER
+  if [[ $SECRET_NUMBER -lt $GUESS_NUMBER ]]
+  then
+    MAIN_GAME "It's lower than that, guess again:"
+  elif [[ $SECRET_NUMBER -gt $GUESS_NUMBER ]]
+  then
+    MAIN_GAME "It's higher than that, guess again:"
+  else
+    echo "You guessed it in <number_of_guesses> tries. The secret number was $SECRET_NUMBER. Nice job!"
   fi
 }
 
