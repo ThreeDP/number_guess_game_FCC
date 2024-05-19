@@ -7,27 +7,38 @@ SECRET_NUMBER=$(( $RANDOM % 1000 + 1 ))
 echo -e "\n~~~~~ Number Guess Game ~~~~~\n"
 
 MAIN_MENU() {
-  echo -e "\nEnter your username:"
+  # get username
+  echo "Enter your username:"
   read USERNAME
+  USERNAME="${USERNAME:0:22}"
+
+  # get user id
   USER_ID=$($PSQL "SELECT user_id FROM users WHERE username = '$USERNAME'")
+
+  # if user not exist
   if [[ -z $USER_ID ]]
   then
+    # insert username
     INSERT_USER_RESULT=$($PSQL "INSERT INTO users(username) VALUES('$USERNAME')")
     if [[ $INSERT_USER_RESULT = "INSERT 0 1" ]]
     then
-      echo "Welcome, $USERNAME! It looks like this is your first time here."
+      # welcome user
+      echo -e "\nWelcome, $USERNAME! It looks like this is your first time here."
+      # get user id
       USER_ID=$($PSQL "SELECT user_id FROM users WHERE username = '$USERNAME'")
     fi
   else
+    # get number of games and best game
     GAMES_INFO=$($PSQL "SELECT COUNT(*), MIN(number_of_guesses) FROM users RIGHT JOIN guess_games USING(user_id) WHERE user_id = $USER_ID")
     IFS="|"
-    read -r GAMES_PLAYED BEST_GAME <<< $GAMES_INFO
+    read -r GAMES_PLAYED BEST_GUESS <<< $GAMES_INFO
+
+    # show initial message
     if [[ $GAMES_PLAYED = '0' ]]
     then
-      echo "Welcome back, $USERNAME! You have played $GAMES_PLAYED games."
-    else
-      echo "Welcome back, $USERNAME! You have played $GAMES_PLAYED games, and your best game took $BEST_GAME guesses."
+      BEST_GUESS=0
     fi
+    echo -e "\nWelcome back, $USERNAME! You have played $GAMES_PLAYED games, and your best game took $BEST_GUESS guesses."
   fi
   MAIN_GAME
 }
@@ -35,11 +46,15 @@ MAIN_MENU() {
 MAIN_GAME() {
   if [[ $1 ]]
   then
-    echo "$1"
+    echo -e "\n$1"
   else
-    echo "Guess the secret number between 1 and 1000:"
+    echo -e "\nGuess the secret number between 1 and 1000:"
   fi
   read GUESS_NUMBER
+  if [[ ! $GUESS_NUMBER =~ ^[0-9]+$ ]]
+  then
+    MAIN_GAME "That is not an integer, guess again:"
+  fi
   if [[ $SECRET_NUMBER -lt $GUESS_NUMBER ]]
   then
     MAIN_GAME "It's lower than that, guess again:" $(($2 + 1))
@@ -48,7 +63,7 @@ MAIN_GAME() {
     MAIN_GAME "It's higher than that, guess again:" $(($2 + 1))
   else
     TRIES=$(($2 + 1))
-    echo "You guessed it in $TRIES tries. The secret number was $SECRET_NUMBER. Nice job!"
+    echo "\nYou guessed it in $TRIES tries. The secret number was $SECRET_NUMBER. Nice job!"
     INSERT_GUESS_GAME_RESULT=$($PSQL "INSERT INTO guess_games(user_id, number_of_guesses, secret_number) VALUES($USER_ID, $TRIES, $SECRET_NUMBER)")
   fi
 }
