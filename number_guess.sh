@@ -53,7 +53,7 @@ MAIN_GAME() {
   read GUESS_NUMBER
   if [[ ! $GUESS_NUMBER =~ ^[0-9]+$ ]]
   then
-    MAIN_GAME "That is not an integer, guess again:"
+    MAIN_GAME "That is not an integer, guess again:" $(($2 + 1))
   fi
   if [[ $SECRET_NUMBER -lt $GUESS_NUMBER ]]
   then
